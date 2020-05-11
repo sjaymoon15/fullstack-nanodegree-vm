@@ -1,0 +1,19 @@
+<div class="row mt-2 mb-2">
+  <div class="col-md-6">
+    <a href="{{url_for('showCategories')}}">
+      <button type="button" class="btn btn-primary">Home</button>
+    </a>
+  </div>
+  <div class="col-md-6 text-right">
+    {% if isUserLoggedIn == True %}
+    <a href="{{url_for('logout')}}">
+      <button type="button" class="btn btn-primary">Log Out</button>
+    </a>
+    {%else%}
+    <a href="{{url_for('showLogin')}}">
+      <button type="button" class="btn btn-primary">Login</button>
+    </a>
+    {% endif %}
+  </div>
+  isUserLoggedIn ? {{ isUserLoggedIn }}
+</div>

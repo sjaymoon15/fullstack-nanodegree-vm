@@ -1,18 +1,10 @@
-<html>
-  <head>
-    <link rel=stylesheet type=text/css href="{{
-    url_for('static',filename='styles.css') }}">
-  </head>
-
-  <body>
-    <h1>Categories</h1>
-    {% for category in categories %}
-    <a href="{{url_for('showCategory', cat_id=category.id)}}">
-      <h2>{{category.name}}</h2>
-    </a>
-    {% endfor %}
-
-    <a href="{{url_for('newCatagory')}}"> Create a New Category</a>
-    <a href="{{url_for('newItem', categories = categories)}}">Add Item</a>
-  </body>
-</html>
+{% extends "main.html" %} {% block content %} {% include "header.html" %}
+<h1>Categories</h1>
+{% for category in categories %}
+<a href="{{url_for('showCategory', cat_id=category.id)}}">
+  <h2>{{category.name}}</h2>
+</a>
+{% endfor %} {% if isUserLoggedIn == True %}
+<a href="{{url_for('newCatagory')}}"> Create a New Category</a>
+<a href="{{url_for('newItem', categories = categories)}}">Add a new Item</a>
+{% endif %} {% endblock %}

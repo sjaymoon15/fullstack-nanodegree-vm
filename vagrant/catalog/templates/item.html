@@ -1,19 +1,12 @@
-<html>
-  <head>
-    <link rel=stylesheet type=text/css href="{{ url_for('static',
-    filename='styles.css') }}">
-  </head>
-  <body>
-    <h1>category name: {{ category.name }}</h1>
+{% extends "main.html" %} {% block content %} {% include "header.html" %}
+<h1>category name: {{ category.name }}</h1>
 
-    <p>item title: {{item.title}}</p>
-    <p>item desc: {{item.description}}</p>
+<p>item title: {{item.title}}</p>
+<p>item desc: {{item.description}}</p>
 
-    <a href="{{url_for('editItem', cat_id=category.id, item_id=item.id)}}"
-      >Edit</a
-    >
-    <a href="{{url_for('deleteItem', cat_id=category.id, item_id=item.id)}}"
-      >Delete</a
-    >
-  </body>
-</html>
+{% if isUserLoggedIn == True %}
+<a href="{{url_for('editItem', cat_id=category.id, item_id=item.id)}}">Edit</a>
+<a href="{{url_for('deleteItem', cat_id=category.id, item_id=item.id)}}"
+  >Delete</a
+>
+{% endif %} {% endblock %}
