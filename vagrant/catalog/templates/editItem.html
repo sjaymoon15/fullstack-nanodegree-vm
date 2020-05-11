@@ -1,0 +1,40 @@
+<html>
+  <head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static',
+    filename='styles.css') }}">
+  </head>
+  <body>
+    <h1>Edit Item</h1>
+    <h2>Category name: {{ category.name }}</h2>
+    <h2>Category id: {{ category.id }}</h2>
+
+    <form action="#" method="post">
+      <p>Title:</p>
+      <input type="text" size="30" name="title" placeholder="{{item.title}}" />
+
+      <p>Description:</p>
+      <textarea
+        name="description"
+        id="description"
+        cols="30"
+        rows="10"
+        placeholder="{{item.description}}"
+      ></textarea>
+
+      <label for="category"></label>
+      <select name="cat_id" id="category">
+        {% for cat in categories %} {% if cat.id == category.id %}
+        <option selected value="{{cat.id}}">{{cat.name}}</option>
+        {%else%}
+        <option value="{{cat.id}}">{{cat.name}}</option>
+        {% endif %} {% endfor %}
+      </select>
+
+      <input type="submit" value="Edit" />
+    </form>
+
+    <a href="{{ url_for('showItem', cat_id=category.id, item_id=item.id)}}">
+      Cancel
+    </a>
+  </body>
+</html>

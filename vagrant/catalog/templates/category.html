@@ -1,0 +1,14 @@
+<html>
+  <head>
+    <link rel=stylesheet type=text/css href="{{ url_for('static',
+    filename='styles.css') }}">
+  </head>
+  <body>
+    <h1>{{ category.name }} items ( {{item_num}} item(s) )</h1>
+    {% for item in items %}
+    <a href="{{url_for('showItem', cat_id = category.id, item_id = item.id)}}"
+      ><p>{{item.title}}</p></a
+    >
+    {% endfor %}
+  </body>
+</html>
