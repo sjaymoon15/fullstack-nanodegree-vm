@@ -22,8 +22,7 @@ class Category(Base):
   def serialize(self):
     return {
       'id': self.id,
-      'name': self.name,
-      'items': self.items
+      'name': self.name
     }
 
 class Item(Base):

@@ -23,28 +23,27 @@ DBSession = sessionmaker(bind=engine)
 session = DBSession()
 app = Flask(__name__)
 
-# @app.route('/categories/JSON')
-# def categoriesJSON():
-#   categories = session.query(Category).all()
-#   return jsonify(categories=[i.serialize for i in categories])
+@app.route('/categories/JSON')
+def categoriesJSON():
+  categories = session.query(Category).all()
+  return jsonify(categories=[i.serialize for i in categories])
 
-# @app.route('/items/JSON')
-# def itemsJSON():
-#   items = session.query(Item).all()
-#   return jsonify(items=[i.serialize for i in items])
+@app.route('/items/JSON')
+def itemsJSON():
+  items = session.query(Item).all()
+  return jsonify(items=[i.serialize for i in items])
 
-# @app.route('/categories/<int:cat_id>/items/JSON')
-# def categoryJSON(cat_id):
-#   category = session.query(Category).filter_by(id=cat_id).one()
-#   # items = session.query(Item).filter_by(cat_id=cat_id).all()
-#   # category['items'] = [i.serialize for i in items]
-#   return jsonify(category)
+@app.route('/categories/<int:cat_id>/items/JSON')
+def categoryJSON(cat_id):
+  category = session.query(Category).filter_by(id=cat_id).one()
+  items = session.query(Item).filter_by(cat_id=cat_id).all()
+  return jsonify(category=category.serialize, items=[i.serialize for i in items])
 
-# @app.route('/categories/<int:cat_id>/items/<int:item_id>/JSON')
-# def showItemJSON(cat_id, item_id):
-#   category = session.query(Category).filter_by(id=cat_id).one()
-#   item = session.query(Item).filter_by(id=item_id).one()
-#   return jsonify({'id': item.id, 'title': item.title, 'description': item.description, 'category_id': item.cat_id})
+@app.route('/categories/<int:cat_id>/items/<int:item_id>/JSON')
+def showItemJSON(cat_id, item_id):
+  category = session.query(Category).filter_by(id=cat_id).one()
+  item = session.query(Item).filter_by(id=item_id).one()
+  return jsonify(category=category.serialize, item=item.serialize)
 
 @app.route('/login')
 def showLogin():
@@ -112,8 +111,6 @@ def gconnect():
   answer = requests.get(userinfo_url, params=params)
 
   data = answer.json()
-
-  print(data)
   login_session['email'] = data['email']
 
   newUserID = getUserID(login_session['email'])
@@ -121,25 +118,14 @@ def gconnect():
       newUserID = createUser(login_session)
   login_session['user_id'] = newUserID
 
-  # output = ''
-  # output += '<h1>Welcome, '
-  # output += '!</h1>'
-  # output += '<img src="'
-  # output += login_session['picture']
-  # output += ' " style = "width: 300px; height: 300px;border-radius: 150px;-webkit-border-radius: 150px;-moz-border-radius: 150px;"> '
-  # flash("you are now logged in as %s" % login_session['email'])
-  # print "done!"
-  # return output
   return redirect(url_for('showCategories'))
 
-# User Helper Functions
 def createUser(login_session):
   newUser = User(email=login_session['email'])
   session.add(newUser)
   session.commit()
   user = session.query(User).filter_by(email=login_session['email']).one()
   return user.id
-
 
 def getUserInfo(user_id):
   user = session.query(User).filter_by(id=user_id).one()
@@ -161,20 +147,15 @@ def isUserLoggedIn():
 def logout():
   access_token = login_session.get('access_token')
   if access_token is None:
-    print 'Access Token is None'
     return redirect(url_for('showCategories'))
-  print 'In gdisconnect access token is %s', access_token
   url = 'https://accounts.google.com/o/oauth2/revoke?token=%s' % login_session['access_token']
   h = httplib2.Http()
   result = h.request(url, 'GET')[0]
-  print 'result is '
-  print result
   if result['status'] == '200':
     del login_session['access_token']
     del login_session['gplus_id']
     del login_session['email']
     del login_session['user_id']
-  
   return redirect(url_for('showCategories'))
 
 @app.route('/')
