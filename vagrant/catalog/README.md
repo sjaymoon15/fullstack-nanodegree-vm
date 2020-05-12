@@ -41,7 +41,12 @@ _This picture was taken on a Mac, but the commands will look the same on Git Bas
 $ git clone git@github.com:sjaymoon15/fullstack-nanodegree-vm.git
 ```
 
-### Start the virtual machine
+### Change directory and Start the virtual machine
+
+```
+fullstack-nanodegree-vm$ cd vagrant
+vagrant$ vagrant up
+```
 
 From your terminal, inside the **vagrant** subdirectory, run the command `vagrant up`. This will cause Vagrant to download the Linux operating system and install it. This may take quite a while (many minutes) depending on how fast your Internet connection is.
 
