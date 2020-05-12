@@ -14,7 +14,6 @@ import requests
 
 CLIENT_ID = json.loads(
   open('client_secrets.json', 'r').read())['web']['client_id']
-APPLICATION_NAME = "Category Item Application"
 
 engine = create_engine('sqlite:///categoryitem.db', connect_args={'check_same_thread': False})
 
@@ -197,9 +196,7 @@ def editItem(cat_id, item_id):
       item.description = request.form['description']
     if request.form['cat_id']:
       cat_id = request.form['cat_id']
-      category = session.query(Category).filter_by(id=cat_id).one()
       item.cat_id = cat_id
-      item.category = category
     session.add(item)
     session.commit()
     return redirect(url_for('showItem', cat_id=cat_id, item_id=item_id))
