@@ -7,6 +7,8 @@ Base = declarative_base()
 
 
 class User(Base):
+    """User class keeps track of users and authors of items.
+    """
     __tablename__ = 'user'
 
     id = Column(Integer, primary_key=True)
@@ -14,6 +16,10 @@ class User(Base):
 
 
 class Category(Base):
+    """Category class
+    Relationship:
+        A category has many items.
+    """
     __tablename__ = 'category'
 
     id = Column(Integer, primary_key=True)
@@ -29,6 +35,10 @@ class Category(Base):
 
 
 class Item(Base):
+    """Item class
+    Relationship:
+        An item belongs to a category.
+    """
     __tablename__ = 'item'
 
     id = Column(Integer, primary_key=True)

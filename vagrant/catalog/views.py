@@ -29,18 +29,27 @@ app = Flask(__name__)
 
 @app.route('/categories/JSON')
 def categoriesJSON():
+    """Returns all categories in JSON format.
+    """
     categories = session.query(Category).all()
     return jsonify(categories=[i.serialize for i in categories])
 
 
 @app.route('/items/JSON')
 def itemsJSON():
+    """Returns all items in JSON format.
+    """
     items = session.query(Item).all()
     return jsonify(items=[i.serialize for i in items])
 
 
 @app.route('/categories/<int:cat_id>/items/JSON')
 def categoryJSON(cat_id):
+    """Returns one category in JSON format.
+
+    Args:
+        cat_id: A category id.
+    """
     category = session.query(Category).filter_by(id=cat_id).one()
     items = session.query(Item).filter_by(cat_id=cat_id).all()
     return jsonify(
@@ -50,6 +59,12 @@ def categoryJSON(cat_id):
 
 @app.route('/categories/<int:cat_id>/items/<int:item_id>/JSON')
 def showItemJSON(cat_id, item_id):
+    """Returns one category in JSON format.
+
+    Args:
+        cat_id: A category id.
+        item_id: An item id.
+    """
     category = session.query(Category).filter_by(id=cat_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     return jsonify(category=category.serialize, item=item.serialize)
@@ -57,6 +72,9 @@ def showItemJSON(cat_id, item_id):
 
 @app.route('/login')
 def showLogin():
+    """Login route.
+    Creates a random state string and save into login_session['state'].
+    """
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in xrange(32))
     login_session['state'] = state
@@ -65,6 +83,9 @@ def showLogin():
 
 @app.route('/gconnect', methods=['POST'])
 def gconnect():
+    """A callback route for google OAuth Authentication.
+    This route gets called inside sifnInCallback function in login.html.
+    """
     if request.args.get('state') != login_session['state']:
         response = make_response(json.dumps('Invalid state parameter.'), 401)
         response.headers['Content-Type'] = 'application/json'
@@ -133,6 +154,8 @@ def gconnect():
 
 
 def createUser(login_session):
+    """A helper function to create a new user and save into DB.
+    """
     newUser = User(email=login_session['email'])
     session.add(newUser)
     session.commit()
@@ -141,11 +164,15 @@ def createUser(login_session):
 
 
 def getUserInfo(user_id):
+    """A helper function to get user instance using user_id.
+    """
     user = session.query(User).filter_by(id=user_id).one()
     return user
 
 
 def getUserID(email):
+    """A helper function to get user's user_id using email.
+    """
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
@@ -154,6 +181,8 @@ def getUserID(email):
 
 
 def isUserLoggedIn():
+    """A helper function to get login status of the current app.
+    """
     if login_session is None or login_session.get('access_token') is None:
         return False
     return True
@@ -161,6 +190,8 @@ def isUserLoggedIn():
 
 @app.route('/logout')
 def logout():
+    """Logs out user by deleting login_session and then redirect to showCategories page.
+    """
     access_token = login_session.get('access_token')
     if access_token is None:
         return redirect(url_for('showCategories'))
@@ -179,6 +210,8 @@ def logout():
 @app.route('/')
 @app.route('/categories/')
 def showCategories():
+    """Shows all categories in categories.html page.
+    """
     categories = session.query(Category).all()
     return render_template(
         'categories.html',
@@ -188,6 +221,8 @@ def showCategories():
 
 @app.route('/categories/<int:cat_id>/items')
 def showCategory(cat_id):
+    """Shows one category and related items in category.html page.
+    """
     category = session.query(Category).filter_by(id=cat_id).one()
     items = session.query(Item).filter_by(cat_id=category.id).all()
     return render_template(
@@ -199,6 +234,9 @@ def showCategory(cat_id):
 
 @app.route('/categories/<int:cat_id>/items/<int:item_id>')
 def showItem(cat_id, item_id):
+    """Shows one category item.
+    Also sends the infomation whether the user is authorized for the item.
+    """
     category = session.query(Category).filter_by(id=cat_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     isUserAuthor = False
@@ -218,6 +256,8 @@ def showItem(cat_id, item_id):
         'GET',
         'POST'])
 def deleteItem(cat_id, item_id):
+    """Deletes one item if the user is authorized.
+    """
     category = session.query(Category).filter_by(id=cat_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
     if isUserLoggedIn() == False or login_session['user_id'] != item.author_id:
@@ -236,6 +276,8 @@ def deleteItem(cat_id, item_id):
         'GET',
         'POST'])
 def editItem(cat_id, item_id):
+    """Edits one item if the user is authorized.
+    """
     item = session.query(Item).filter_by(id=item_id).one()
     if isUserLoggedIn() == False or login_session['user_id'] != item.author_id:
         return redirect(url_for('showItem', cat_id=cat_id, item_id=item_id))
@@ -263,6 +305,8 @@ def editItem(cat_id, item_id):
 
 @app.route('/categories/new/', methods=['GET', 'POST'])
 def newCatagory():
+    """Creates a new catagory.
+    """
     if request.method == 'POST':
         newCategory = Category(name=request.form['name'])
         session.add(newCategory)
@@ -274,6 +318,8 @@ def newCatagory():
 
 @app.route('/items/new/', methods=['GET', 'POST'])
 def newItem():
+    """Creates a new item.
+    """
     if request.method == 'POST':
         newItem = Item(
             title=request.form['title'],
