@@ -36,6 +36,7 @@ class Item(Base):
     description = Column(String(250))
     cat_id = Column(Integer, ForeignKey('category.id'))
     category = relationship('Category', back_populates='items')
+    author_id = Column(Integer, ForeignKey('user.id'))
 
     @property
     def serialize(self):

@@ -194,19 +194,22 @@ def showCategory(cat_id):
         'category.html',
         category=category,
         items=items,
-        item_num=len(items),
-        isUserLoggedIn=isUserLoggedIn())
+        item_num=len(items))
 
 
 @app.route('/categories/<int:cat_id>/items/<int:item_id>')
 def showItem(cat_id, item_id):
     category = session.query(Category).filter_by(id=cat_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
+    isUserAuthor = False
+    if isUserLoggedIn() == True and login_session['user_id'] == item.author_id:
+        isUserAuthor = True
     return render_template(
         'item.html',
         category=category,
         item=item,
-        isUserLoggedIn=isUserLoggedIn())
+        isUserLoggedIn=isUserLoggedIn(),
+        isUserAuthor=isUserAuthor)
 
 
 @app.route(
@@ -217,6 +220,8 @@ def showItem(cat_id, item_id):
 def deleteItem(cat_id, item_id):
     category = session.query(Category).filter_by(id=cat_id).one()
     item = session.query(Item).filter_by(id=item_id).one()
+    if isUserLoggedIn() == False or login_session['user_id'] != item.author_id:
+        return redirect(url_for('showItem', cat_id=cat_id, item_id=item_id))
     if request.method == 'POST':
         session.delete(item)
         session.commit()
@@ -232,6 +237,8 @@ def deleteItem(cat_id, item_id):
         'POST'])
 def editItem(cat_id, item_id):
     item = session.query(Item).filter_by(id=item_id).one()
+    if isUserLoggedIn() == False or login_session['user_id'] != item.author_id:
+        return redirect(url_for('showItem', cat_id=cat_id, item_id=item_id))
     if request.method == 'POST':
         if request.form['title']:
             item.title = request.form['title']
@@ -271,7 +278,8 @@ def newItem():
         newItem = Item(
             title=request.form['title'],
             description=request.form['description'],
-            cat_id=request.form['cat_id'])
+            cat_id=request.form['cat_id'],
+            author_id=login_session['user_id'])
         session.add(newItem)
         session.commit()
         return redirect(

@@ -4,7 +4,7 @@
 <p>item title: {{item.title}}</p>
 <p>item desc: {{item.description}}</p>
 
-{% if isUserLoggedIn == True %}
+{% if isUserLoggedIn == True and isUserAuthor == True %}
 <a href="{{url_for('editItem', cat_id=category.id, item_id=item.id)}}">Edit</a>
 <a href="{{url_for('deleteItem', cat_id=category.id, item_id=item.id)}}"
   >Delete</a
