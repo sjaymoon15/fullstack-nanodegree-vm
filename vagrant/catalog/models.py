@@ -18,7 +18,7 @@ class Category(Base):
 
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
-    items = relationship('Item', back_populates='category')
+    items = relationship('Item', back_populates='category', cascade='all, delete, delete-orphan')
 
     @property
     def serialize(self):
